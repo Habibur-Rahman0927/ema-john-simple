@@ -1,25 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import fakeData from '../../fakeData';
 import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
 
 const Shop = () => {
-    const first10 = fakeData.slice(0, 10);
-    const [products, setProducts] = useState(first10);
+    // const first10 = fakeData.slice(0, 10);
+    const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
+    useEffect(() => {
+        fetch('https://enigmatic-meadow-25159.herokuapp.com/products')
+            .then(res => res.json())
+            .then(data => setProducts(data))
+    }, [])
 
     useEffect(() => {
         const savedCart = getDatabaseCart();
         const productkeys = Object.keys(savedCart);
-        const previousCart = productkeys.map(existingKey => {
-            const product = fakeData.find(pd => pd.key === existingKey);
-            product.quantity = savedCart[existingKey];
-            return product;
+        fetch('https://enigmatic-meadow-25159.herokuapp.com/productsBykeys', {
+            method:'POST',
+            headers:{
+                'Content-Type' : 'application/json'
+            },
+            body:JSON.stringify(productkeys)
         })
-        setCart(previousCart)
+        .then(res => res.json())
+        .then(data => setCart(data))
+        // if (products.length > 0) {
+        //     const previousCart = productkeys.map(existingKey => {
+        //         const product = products.find(pd => pd.key === existingKey);
+        //         product.quantity = savedCart[existingKey];
+        //         return product;
+        //     })
+        //     setCart(previousCart)
+        // }
     }, [])
     const handleAddProduct = (product) => {
         // console.log('Product Add',product);

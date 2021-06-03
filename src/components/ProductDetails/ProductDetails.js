@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import fakeData from '../../fakeData';
 import Product from '../Product/Product';
 
 const ProductDetails = () => {
     const {produckey} = useParams();
-    const product =  fakeData.find(pd => pd.key === produckey);
+    const [product, setProduct] = useState({})
+
+    useEffect(() => {
+        fetch('https://enigmatic-meadow-25159.herokuapp.com/products/'+produckey)
+        .then(res => res.json())
+        .then(data => setProduct(data));
+
+    }, [produckey])
     return (
         <div>
             <h1>Your Product ProductDetails</h1>

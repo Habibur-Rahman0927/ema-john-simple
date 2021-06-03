@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import fakeData from '../../fakeData';
+// import fakeData from '../../fakeData';
 import { getDatabaseCart, processOrder, removeFromDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import ReviewItem from '../ReviewItem/ReviewItem';
@@ -23,14 +23,22 @@ const Review = () => {
     useEffect(() => {
         const savedCart = getDatabaseCart();
         const productkeys = Object.keys(savedCart);
-        const cartProducts = productkeys.map(key => {
-            const product = fakeData.find(pd => pd.key === key);
-            product.quantity = savedCart[key];
-            return product;
+        fetch('https://enigmatic-meadow-25159.herokuapp.com/productsBykeys', {
+            method:'POST',
+            headers:{
+                'Content-Type' : 'application/json'
+            },
+            body:JSON.stringify(productkeys)
         })
+        .then(res => res.json())
+        .then(data => setCart(data))
+        // const cartProducts = productkeys.map(key => {
+        //     const product = fakeData.find(pd => pd.key === key);
+        //     product.quantity = savedCart[key];
+        //     return product;
+        // })
 
-        setCart(cartProducts);
-        console.log(cartProducts)
+        // setCart(cartProducts);
     }, []);
     return (
         <div className="twin-container">
